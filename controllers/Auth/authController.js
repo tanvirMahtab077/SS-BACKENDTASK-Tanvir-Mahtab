@@ -9,10 +9,10 @@ exports.register = async (req, res, next) => {
       .status(400)
       .json({ message: "Password must be less than 6 characters" });
   }
-  if (userName.length === 0) {
+  if (!userName) {
     return res.status(400).json({ message: "User name is required" });
   }
-  if (isValidEmail === false) {
+  if (!isValidEmail) {
     return res.status(400).json({ message: "Email not valid" });
   }
   try {
@@ -35,6 +35,39 @@ exports.register = async (req, res, next) => {
     res.status(401).json({
       message: "User not created successful",
       error: err.mesage,
+    });
+  }
+};
+
+exports.login = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      message: "Email or Password not present",
+    });
+  }
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({
+        message: "User not found. Please Register....",
+      });
+    }
+    if (user.email !== email || user.password !== password) {
+      return res.status(400).json({
+        message: "Email or password doesn't macth.Please try again....",
+      });
+    }
+    return res.status(200).json({
+      message: "Login successful",
+      user,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({
+      message: "An error occurred",
+      error: err.message,
     });
   }
 };
