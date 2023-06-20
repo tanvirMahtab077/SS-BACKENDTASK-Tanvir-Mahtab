@@ -71,3 +71,24 @@ exports.login = async (req, res, next) => {
     });
   }
 };
+
+exports.updateRole = async (req, res, next) => {
+  const { role, email } = req.body;
+  
+  if (!role) {
+    return res.status(400).json({ message: "Role is not present" });
+  }
+
+  try {
+    const user = await User.findOne({ email });
+    if (user.role !== "admin") {
+      await User.updateOne({ role });
+      res.status(200).json({ message: "Update successful", user });
+    } else {
+      res.status(400).json({ message: "User is already an Admin" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ message: "An error occurred", error: err.message });
+  }
+};
