@@ -1,6 +1,7 @@
 const User = require("../../model/User");
 var validator = require("email-validator");
-const bcrypt = require('bcryptjs');
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 exports.register = async (req, res, next) => {
   const { userName, email, password } = req.body;
@@ -24,7 +25,7 @@ exports.register = async (req, res, next) => {
       const user = await User.create({
         userName,
         email,
-        password:hashPassword,
+        password: hashPassword,
       });
       res.status(200).json({
         message: "User successfully created",
@@ -52,18 +53,36 @@ exports.login = async (req, res, next) => {
   }
   try {
     const user = await User.findOne({ email });
-    
+    const maxAge = 3 * 60 * 60;
+
     if (!user) {
       return res.status(401).json({
         message: "User not found. Please Register....",
       });
     }
+
     const validPass = await bcrypt.compare(password, user.password);
-    if (!validPass) return res.status(400).json({message:'Password does not match'});
-    return res.status(200).json({
-      message: "Login successful",
-      user,
+    if (!validPass) {
+      return res.status(400).json({ message: "Password does not match" });
+    }
+
+    const token = jwt.sign(
+      { id: user._id, userName: user.userName },
+      process.env.Jwt_SECRET_Key,
+      {
+        expiresIn: maxAge,
+      }
+    );
+
+    res.cookie(user._id, token, {
+      maxAge: maxAge * 1000,
+      httpOnly: true,
+      saemSite: "lax",
     });
+
+    return res
+      .status(200)
+      .json({ message: "Successfully Logged In", user: user, token });
   } catch (err) {
     console.log(err);
     res.status(400).json({
