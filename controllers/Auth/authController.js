@@ -73,8 +73,8 @@ exports.login = async (req, res, next) => {
 };
 
 exports.updateRole = async (req, res, next) => {
-  const { role, email } = req.body;
-  
+  const { role, email } = req.query;
+
   if (!role) {
     return res.status(400).json({ message: "Role is not present" });
   }
@@ -90,5 +90,22 @@ exports.updateRole = async (req, res, next) => {
   } catch (err) {
     console.error(err);
     res.status(400).json({ message: "An error occurred", error: err.message });
+  }
+};
+
+exports.deleteUser = async (req, res, next) => {
+  const { email } = req.query;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "User not found!" });
+    }
+    await User.deleteOne({ email });
+    res.status(201).json({ message: "User successfully deleted" });
+  } catch (err) {
+    console.error(err);
+    res
+      .status(400)
+      .json({ message: "An error occurred", error: error.message });
   }
 };
