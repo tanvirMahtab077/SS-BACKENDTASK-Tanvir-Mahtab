@@ -1,4 +1,4 @@
-const User = require("../../model/User");
+const User = require("../model/User");
 var validator = require("email-validator");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
@@ -29,7 +29,6 @@ exports.register = async (req, res, next) => {
       });
       res.status(200).json({
         message: "User successfully created",
-        user,
       });
     } else {
       res.status(400).json({ message: "User already exist" });
@@ -67,65 +66,25 @@ exports.login = async (req, res, next) => {
     }
 
     const token = jwt.sign(
-      { id: user._id, userName: user.userName },
+      { id: user._id, userName: user.userName, role: user.role },
       process.env.Jwt_SECRET_Key,
       {
         expiresIn: maxAge,
       }
     );
 
-    res.cookie(user._id, token, {
+    res.cookie("jwt", token, {
       maxAge: maxAge * 1000,
       httpOnly: true,
       saemSite: "lax",
     });
 
-    return res
-      .status(200)
-      .json({ message: "Successfully Logged In", user: user, token });
+    return res.status(200).json({ message: "Successfully Logged In" });
   } catch (err) {
     console.log(err);
     res.status(400).json({
       message: "An error occurred",
       error: err.message,
     });
-  }
-};
-
-exports.updateRole = async (req, res, next) => {
-  const { role, email } = req.query;
-
-  if (!role) {
-    return res.status(400).json({ message: "Role is not present" });
-  }
-
-  try {
-    const user = await User.findOne({ email });
-    if (user.role !== "admin") {
-      await User.updateOne({ role });
-      res.status(200).json({ message: "Update successful", user });
-    } else {
-      res.status(400).json({ message: "User is already an Admin" });
-    }
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ message: "An error occurred", error: err.message });
-  }
-};
-
-exports.deleteUser = async (req, res, next) => {
-  const { email } = req.query;
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: "User not found!" });
-    }
-    await User.deleteOne({ email });
-    res.status(201).json({ message: "User successfully deleted" });
-  } catch (err) {
-    console.error(err);
-    res
-      .status(400)
-      .json({ message: "An error occurred", error: error.message });
   }
 };
