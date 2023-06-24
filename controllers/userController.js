@@ -1,15 +1,14 @@
 const User = require("../model/User");
 
-exports.userList = async (req,res,next)=>{
-  try{
+exports.userList = async (req, res, next) => {
+  try {
     const users = await User.find();
-    res.status(200).json({users})
-    
-  }catch(err){
+    res.status(200).json({ users });
+  } catch (err) {
     console.error(err);
     res.status(400).json({ message: "An error occurred", error: err.message });
   }
-}
+};
 
 exports.updateRole = async (req, res, next) => {
   const { role, email } = req.query;
