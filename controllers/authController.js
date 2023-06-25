@@ -37,7 +37,7 @@ exports.register = async (req, res, next) => {
     console.error(err);
     res.status(401).json({
       message: "User not created successful",
-      error: err.mesage,
+      error: err.message,
     });
   }
 };
@@ -90,7 +90,7 @@ exports.login = async (req, res, next) => {
       .status(200)
       .json({ message: "Successfully Logged In", accessToken });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(400).json({
       message: "An error occurred",
       error: err.message,
