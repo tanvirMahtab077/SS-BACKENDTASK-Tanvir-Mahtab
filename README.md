@@ -127,3 +127,28 @@ services:
   route: ``` localhost:5000/api/user/list```
 
     http methode: ```GET```
+
+
+## Security implementations are done in the project
+- #### Password Hashing: 
+  When an user get registered, the given password will stored in the database with hashed string form like ```$2a$10$Fn1dC5G16BpquhQRz4GFx./k6gcxkJeZXuKi7CZTuGNUyP7sFBsFS```.
+
+- #### Access Token with jwt: 
+
+  Access tokens are used in token-based authentication to allow an application to access an API.
+
+
+- #### Refresh Token with jwt: 
+
+
+  A refresh token is a special token that is used to obtain additional access tokens. This allows you to have short-lived access tokens without having to collect credentials every time one expires
+
+- #### Store Refresh token in the HttpOnly cookie:
+
+  An HttpOnly Cookie is a tag added to a browser cookie that prevents client-side scripts from accessing data. It provides a gate that prevents the specialized cookie from being accessed by anything other than the server.
+
+
+- #### Protected Route: 
+
+
+    Protected routes are routes that allow access to authorized users only. This means that users must first meet certain conditions before accessing that specific route. This is essential for securing certain routes or information.
