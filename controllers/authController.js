@@ -44,7 +44,6 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
-
   if (!email || !password) {
     return res.status(400).json({
       message: "Email or Password not present",
@@ -52,7 +51,7 @@ exports.login = async (req, res, next) => {
   }
   try {
     const user = await User.findOne({ email });
-    const maxAge = 3 * 60 * 60;
+    // const maxAge = 3 * 60 * 60;
 
     if (!user) {
       return res.status(401).json({
@@ -65,21 +64,31 @@ exports.login = async (req, res, next) => {
       return res.status(400).json({ message: "Password does not match" });
     }
 
-    const token = jwt.sign(
-      { id: user._id, userName: user.userName, role: user.role },
-      process.env.Jwt_SECRET_Key,
+    const accessToken = jwt.sign(
       {
-        expiresIn: maxAge,
-      }
+        userName: user.userName,
+        role: user.role,
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "2m" }
     );
 
-    res.cookie("jwt", token, {
-      maxAge: maxAge * 1000,
+    const refreshToken = jwt.sign(
+      { userName: user.userName },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    res.cookie("jwt", refreshToken, {
       httpOnly: true,
-      saemSite: "lax",
+      // secure: true,
+      sameSite: "None",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.status(200).json({ message: "Successfully Logged In" });
+    return res
+      .status(200)
+      .json({ message: "Successfully Logged In", accessToken });
   } catch (err) {
     console.error(err);
     res.status(400).json({
@@ -87,4 +96,44 @@ exports.login = async (req, res, next) => {
       error: err.message,
     });
   }
+};
+
+exports.refreshToken = (req, res) => {
+  const cookies = req.cookies;
+
+  if (!cookies?.jwt) return res.status(401).json({ message: "Unauthorized" });
+
+  const refreshToken = cookies.jwt;
+
+  jwt.verify(
+    refreshToken,
+    process.env.REFRESH_TOKEN_SECRET,
+    async (err, decoded) => {
+      if (err) return res.status(403).json({ message: "Forbidden" });
+
+      const user = await User.findOne({
+        userName: decoded.userName,
+      }).exec();
+
+      if (!user) return res.status(401).json({ message: "Unauthorized" });
+
+      const accessToken = jwt.sign(
+        {
+          userName: user.userName,
+          role: user.role,
+        },
+        process.env.ACCESS_TOKEN_SECRET,
+        { expiresIn: "2m" }
+      );
+
+      res.json({ accessToken });
+    }
+  );
+};
+
+exports.logout = (req, res) => {
+  const cookies = req.cookies;
+  if (!cookies?.jwt) return res.sendStatus(204); //No content
+  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+  res.json({ message: "Cookie cleared" });
 };
