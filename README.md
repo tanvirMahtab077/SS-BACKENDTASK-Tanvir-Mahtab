@@ -3,6 +3,12 @@
 SS-BACKEND-TASK
 ## Getting Started
 
+### Build With
+
+- Nodejs
+- Express
+- MongoDb
+
 ### Dependencies
 
 * Must be Nodejs installed ( Recomanded v20.3.0 ). 
