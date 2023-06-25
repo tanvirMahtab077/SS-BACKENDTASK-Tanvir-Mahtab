@@ -62,11 +62,49 @@ services:
     route: ``` localhost:5000/api/auth/register ```
 
     http methode: ```POST``` 
+
 - #### For login -  
 
   route: ``` localhost:5000/api/auth/login ```
 
     http methode: ```POST``` 
+
+- #### For logout -  
+
+  route: ``` localhost:5000/api/auth/logout ```
+
+    http methode: ```POST``` 
+
+- #### For Refresh the token -  
+
+  route: ``` localhost:5000/api/auth/refreshToken ```
+
+    http methode: ```GET``` 
+
+- #### Add movie or tv Show details. only selected user can add a movie or tv show -  
+
+  route: ``` http://localhost:5000/api/show/add ```
+
+    http methode: ``` POST ``` 
+
+- #### For List of movie or tv show -  
+
+  route: ``` http://localhost:5000/api/show/all ```
+
+    http methode: ``` GET ```
+
+
+ - #### Details of a movie or tv show-  
+
+ 
+    route: ``` localhost:5000/api/show/findOne ```
+
+    http methode: ```GET```
+
+    Query Params : ```id``` 
+
+   
+
 
 - #### For update the user role (admin, creator, basic). only admin can update the role  -  
 
@@ -83,3 +121,9 @@ services:
     http methode: ```DELETE```
 
     Query Params : ```email``` 
+
+- #### To show all user list.  -  
+
+  route: ``` localhost:5000/api/user/list```
+
+    http methode: ```GET```
