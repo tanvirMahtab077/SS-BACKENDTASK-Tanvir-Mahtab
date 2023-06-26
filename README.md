@@ -16,7 +16,7 @@ SS-BACKEND-TASK
 
 ### Project setup
 
-* Clone the github ripository [here](https://github.com/tanvirMahtab077/SS-BACKENDTASK-Tanvir-Mahtab) .
+* Clone the github repository [here](https://github.com/tanvirMahtab077/SS-BACKENDTASK-Tanvir-Mahtab) .
 - Open the project from any code editor (vscode) and open your vscode terminal
 * Run the comand in the terminal:  
    ```   npm i --save   ```
