@@ -5,7 +5,7 @@ SS-BACKEND-TASK
 
 ### Build With
 
-- Nodejs
+- Nodejs (v20.3.0 )
 - Express
 - MongoDb
 
